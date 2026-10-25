@@ -1,0 +1,263 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Strawberry Café</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Trebuchet MS', sans-serif;
+  background: #fff0f5;
+  color: #713d52;
+  text-align: center;
+}
+
+header {
+  background: #f6a8c4;
+  padding: 22px 10px;
+  color: white;
+}
+
+h1 {
+  margin: 0;
+  font-size: 32px;
+}
+
+.subtitle {
+  margin-bottom: 0;
+}
+
+main {
+  max-width: 500px;
+  margin: 20px auto;
+  padding: 18px;
+}
+
+.card {
+  background: white;
+  padding: 22px;
+  border-radius: 24px;
+  box-shadow: 0 5px 15px #e9b5c966;
+  margin-bottom: 18px;
+}
+
+.customer {
+  font-size: 65px;
+}
+
+.order {
+  font-size: 21px;
+  font-weight: bold;
+}
+
+.stats {
+  display: flex;
+  justify-content: space-around;
+  gap: 10px;
+  font-weight: bold;
+}
+
+.drinks {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+button {
+  border: 2px solid #f6b4cd;
+  background: #fff5f8;
+  color: #713d52;
+  padding: 16px 8px;
+  border-radius: 18px;
+  font: inherit;
+  font-weight: bold;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+.drink {
+  font-size: 17px;
+}
+
+.drink span {
+  display: block;
+  font-size: 36px;
+  margin-bottom: 6px;
+}
+
+#message {
+  min-height: 28px;
+  font-weight: bold;
+  margin: 16px 0;
+}
+
+.primary {
+  background: #ed82aa;
+  color: white;
+  border: none;
+  width: 100%;
+  margin-top: 12px;
+}
+
+footer {
+  padding: 20px;
+  color: #a66d83;
+  font-size: 13px;
+}
+
+button:focus-visible {
+  outline: 3px solid #9a5271;
+  outline-offset: 3px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>🍓 Strawberry Café 🍓</h1>
+  <p class="subtitle">¡Un cafecito lleno de dulzura!</p>
+</header>
+
+<main>
+  <section class="card">
+    <div class="customer" id="customer">🐰</div>
+    <h2>¡Un cliente llegó!</h2>
+    <p class="order" id="order">Quiero un café ☕</p>
+
+    <div class="stats">
+      <span>⭐ Puntos: <span id="score">0</span></span>
+      <span>💗 Vidas: <span id="lives">3</span></span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>¿Qué vas a preparar?</h2>
+
+    <div class="drinks" id="drinks">
+      <button class="drink" data-drink="Café">
+        <span>☕</span>Café
+      </button>
+
+      <button class="drink" data-drink="Té">
+        <span>🍵</span>Té
+      </button>
+
+      <button class="drink" data-drink="Batido">
+        <span>🥤</span>Batido
+      </button>
+
+      <button class="drink" data-drink="Chocolate">
+        <span>🍫</span>Chocolate
+      </button>
+    </div>
+
+    <p id="message" aria-live="polite">¡Elegí una bebida!</p>
+    <button class="primary" id="restart">🔄 Empezar de nuevo</button>
+  </section>
+</main>
+
+<footer>
+  Hecho con 💗 para los amantes del café y las fresas.
+</footer>
+
+<script>
+const drinks = ["Café", "Té", "Batido", "Chocolate"];
+const customers = ["🐰", "🐱", "🐻", "🐸", "🐼"];
+
+let score = 0;
+let lives = 3;
+let currentDrink = "";
+let playing = true;
+
+const orderText = document.getElementById("order");
+const customer = document.getElementById("customer");
+const scoreText = document.getElementById("score");
+const livesText = document.getElementById("lives");
+const message = document.getElementById("message");
+const drinkButtons = document.querySelectorAll(".drink");
+const restartButton = document.getElementById("restart");
+
+function newOrder() {
+  currentDrink =
+    drinks[Math.floor(Math.random() * drinks.length)];
+
+  orderText.textContent = "Quiero " +
+    (currentDrink === "Café" ? "un café ☕" :
+     currentDrink === "Té" ? "un té 🍵" :
+     currentDrink === "Batido" ? "un batido 🥤" :
+     "un chocolate 🍫");
+
+  customer.textContent =
+    customers[Math.floor(Math.random() * customers.length)];
+}
+
+function updateStats() {
+  scoreText.textContent = score;
+  livesText.textContent = lives;
+}
+
+function finishGame() {
+  playing = false;
+  orderText.textContent = "¡Turno terminado!";
+  customer.textContent = "🍓";
+  message.textContent = "Tu puntuación final: " + score +
+    " puntos. ¡Gracias por jugar!";
+  drinkButtons.forEach(button => button.disabled = true);
+}
+
+function chooseDrink(drink) {
+  if (!playing) return;
+
+  if (drink === currentDrink) {
+    score += 10;
+    message.textContent = "¡Pedido correcto! +10 puntos 💗";
+  } else {
+    lives -= 1;
+    message.textContent = "¡Uy! Ese no era el pedido. 💕";
+  }
+
+  updateStats();
+
+  if (lives <= 0) {
+    finishGame();
+  } else {
+    newOrder();
+  }
+}
+
+drinkButtons.forEach(button => {
+  button.addEventListener("click", () => {
+    chooseDrink(button.dataset.drink);
+  });
+});
+
+restartButton.addEventListener("click", () => {
+  score = 0;
+  lives = 3;
+  playing = true;
+
+  drinkButtons.forEach(button => button.disabled = false);
+
+  message.textContent = "¡Nuevo turno! Elegí una bebida.";
+  updateStats();
+  newOrder();
+});
+
+updateStats();
+newOrder();
+</script>
+
+</body>
+</html>
